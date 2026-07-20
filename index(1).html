@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homotopy Type Theory Reading Group · UGA · Fall 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --pearl-50:  #F5F9FC;
+    --pearl-75:  #EEF4F9;
+    --pearl-100: #E3EDF5;
+    --pearl-200: #CCDFEB;
+    --pearl-300: #A9C6DC;
+    --blue-500:  #5C87A8;
+    --blue-600:  #3E6B8E;
+    --blue-800:  #234061;
+    --ink-900:   #1B2836;
+    --ink-700:   #37485A;
+    --lilac-200: #E4D9EA;
+    --rose-100:  #F1E3E4;
+    --line: rgba(35,64,97,0.14);
+    --shadow: 0 1px 2px rgba(27,40,54,0.05), 0 8px 24px -12px rgba(35,64,97,0.18);
+    --radius: 14px;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:
+      radial-gradient(1100px 600px at 82% -8%, rgba(228,217,234,0.55), transparent 60%),
+      radial-gradient(900px 500px at -5% 12%, rgba(169,198,220,0.35), transparent 55%),
+      var(--pearl-50);
+    color: var(--ink-900);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection{ background: var(--pearl-300); color: var(--blue-800); }
+
+  a{ color: inherit; text-decoration: none; }
+
+  .wrap{ max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; color: var(--blue-800); letter-spacing: -0.01em; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--blue-600);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width: 22px; height: 1px;
+    background: var(--blue-500);
+    display:inline-block;
+  }
+
+  /* ---------- Nav ---------- */
+  header.nav{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(245,249,252,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 32px;
+    max-width: 1080px; margin:0 auto;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono', monospace; font-size:14px; color: var(--blue-800); font-weight:500; }
+  .brand svg{ display:block; }
+  nav.links{ display:flex; gap: 28px; font-size: 14.5px; color: var(--ink-700); }
+  nav.links a{ transition: color .15s ease; }
+  nav.links a:hover{ color: var(--blue-800); }
+  nav.links a:focus-visible, a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--blue-600); outline-offset: 3px; border-radius: 4px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{ padding: 88px 0 64px; position: relative; overflow: hidden; }
+  .hero-grid{ display:grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items:center; }
+  .hero h1{
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1.06;
+    margin: 18px 0 22px;
+  }
+  .hero h1 em{ font-style: italic; color: var(--blue-600); }
+  .hero p.lede{ font-size: 17px; color: var(--ink-700); max-width: 46ch; margin-bottom: 30px; }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 12px 22px; border-radius: 999px;
+    font-size: 14.5px; font-weight: 500;
+    border: 1px solid transparent;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary{ background: var(--blue-800); color: var(--pearl-50); box-shadow: var(--shadow); }
+  .btn-primary:hover{ transform: translateY(-1px); background: var(--blue-600); }
+  .btn-ghost{ border-color: var(--pearl-300); color: var(--blue-800); background: rgba(255,255,255,0.5); }
+  .btn-ghost:hover{ background: var(--pearl-100); }
+
+  .hero-art{
+    background: linear-gradient(155deg, #FBFDFE 0%, var(--pearl-100) 55%, var(--lilac-200) 130%);
+    border: 1px solid var(--pearl-200);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 10px;
+  }
+  .hero-art svg{ width:100%; height:auto; display:block; }
+
+  /* ---------- Section shell ---------- */
+  section{ padding: 76px 0; border-top: 1px solid var(--line); }
+  section:first-of-type{ border-top: none; }
+  .section-head{ max-width: 620px; margin-bottom: 42px; }
+  .section-head h2{ font-size: clamp(24px, 3vw, 32px); margin-top: 12px; }
+  .section-head p{ color: var(--ink-700); margin-top: 12px; font-size: 15.5px; }
+
+  /* ---------- About ---------- */
+  .about-grid{ display:grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; }
+  .about-grid p{ color: var(--ink-700); margin-bottom: 16px; font-size: 15.5px; max-width: 58ch; }
+  .glyph-panel{
+    background: var(--pearl-75);
+    border: 1px solid var(--pearl-200);
+    border-radius: var(--radius);
+    padding: 26px;
+    display:grid; grid-template-columns: repeat(3,1fr); gap: 4px;
+    align-content: start;
+  }
+  .glyph{
+    aspect-ratio: 1;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-size: 26px; color: var(--blue-600);
+    border-radius: 10px;
+  }
+  .glyph span.label{ display:none; }
+  .glyph-caption{ grid-column: 1/-1; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--ink-700); text-align:center; margin-top: 10px; letter-spacing: .03em;}
+
+  /* ---------- Logistics cards ---------- */
+  .cards{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .card{
+    background: #fff;
+    border: 1px solid var(--pearl-200);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    box-shadow: var(--shadow);
+  }
+  .card .k{ font-family:'IBM Plex Mono', monospace; font-size: 11.5px; text-transform: uppercase; letter-spacing:.08em; color: var(--blue-500); }
+  .card .v{ font-family:'Fraunces', serif; font-size: 19px; color: var(--blue-800); margin-top: 10px; }
+  .card .d{ font-size: 13.5px; color: var(--ink-700); margin-top: 8px; }
+
+  /* ---------- Schedule ---------- */
+  .timeline{ position: relative; }
+  .timeline::before{
+    content:""; position:absolute; left: 27px; top: 6px; bottom: 6px; width:1px;
+    background: linear-gradient(var(--pearl-300), var(--pearl-200));
+  }
+  .tl-item{ display:grid; grid-template-columns: 56px 1fr; gap: 20px; padding: 18px 0; position:relative; }
+  .tl-item + .tl-item{ border-top: 1px dashed var(--line); }
+  .tl-num{
+    width:56px; height:56px; border-radius:50%;
+    background: var(--pearl-75); border:1px solid var(--pearl-200);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size: 13px; color: var(--blue-600);
+    z-index: 1;
+  }
+  .tl-body{ display:flex; flex-wrap:wrap; align-items:baseline; gap: 6px 14px; }
+  .tl-week{ font-family:'IBM Plex Mono', monospace; font-size: 12px; color: var(--blue-500); }
+  .tl-title{ font-family:'Fraunces', serif; font-size: 18px; color: var(--blue-800); width:100%; }
+  .tl-desc{ font-size: 14px; color: var(--ink-700); width:100%; margin-top:2px; }
+
+  /* ---------- Resources ---------- */
+  .res-list{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .res-item{
+    padding: 18px 20px; border: 1px solid var(--pearl-200); border-radius: 12px;
+    background: linear-gradient(180deg, #fff, var(--pearl-75));
+    display:flex; justify-content:space-between; align-items:center; gap: 12px;
+    transition: box-shadow .15s ease, transform .15s ease;
+  }
+  .res-item:hover{ box-shadow: var(--shadow); transform: translateY(-1px); }
+  .res-item .rt{ font-size: 14.5px; color: var(--blue-800); font-weight: 500; }
+  .res-item .rd{ font-size: 12.5px; color: var(--ink-700); margin-top:3px; }
+  .res-arrow{ font-family:'IBM Plex Mono', monospace; color: var(--blue-500); font-size:16px; }
+
+  /* ---------- Join / footer ---------- */
+  .join{
+    background: var(--blue-800);
+    border-radius: 22px;
+    padding: 52px 44px;
+    color: var(--pearl-50);
+    display:grid; grid-template-columns: 1.3fr 0.9fr; gap:36px; align-items:center;
+    position: relative; overflow:hidden;
+  }
+  .join::after{
+    content:""; position:absolute; inset:0;
+    background: radial-gradient(600px 300px at 90% 0%, rgba(228,217,234,0.25), transparent 60%);
+    pointer-events:none;
+  }
+  .join h2{ color: #fff; font-size: clamp(22px,3vw,28px); }
+  .join p{ color: var(--pearl-200); font-size: 14.5px; margin-top: 10px; max-width: 46ch; }
+  .join-box{
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .join-box .k{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color: var(--pearl-300); }
+  .join-box .v{ font-size: 15px; margin-top:6px; margin-bottom:14px; }
+  .join-box .v:last-child{ margin-bottom:0; }
+
+  footer{ padding: 34px 0 60px; text-align:center; }
+  footer p{ font-size: 12.5px; color: var(--ink-700); }
+  footer .fm{ font-family:'IBM Plex Mono', monospace; }
+
+  .placeholder{ border-bottom: 1px dashed var(--blue-500); }
+
+  @media (max-width: 860px){
+    .hero-grid, .about-grid, .join{ grid-template-columns: 1fr; }
+    .cards{ grid-template-columns: repeat(2,1fr); }
+    .res-list{ grid-template-columns: 1fr; }
+    nav.links{ display:none; }
+    .wrap{ padding: 0 20px; }
+    .hero{ padding: 56px 0 40px; }
+    section{ padding: 52px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #homotopy-sweep, #homotopy-dot{ animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <circle cx="10" cy="13" r="7.5" stroke="#3E6B8E" stroke-width="1.3"/>
+        <circle cx="16" cy="13" r="7.5" stroke="#A9C6DC" stroke-width="1.3"/>
+      </svg>
+      HoTT · UGA
+    </div>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#schedule">Schedule</a>
+      <a href="#logistics">Logistics</a>
+      <a href="#resources">Resources</a>
+      <a href="#join">Join</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Fall 2026 · University of Georgia</p>
+        <h1>Two paths,<br>one <em>homotopy</em><br>apart.</h1>
+        <p class="lede">A student-run reading group working through the Univalent Foundations
+          program — from dependent type theory to higher inductive types, univalence,
+          and synthetic homotopy theory. Weekly, informal, and proof-first.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#join">Join the mailing list</a>
+          <a class="btn btn-ghost" href="#schedule">See the schedule</a>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <svg viewBox="0 0 560 380" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#A9C6DC"/>
+              <stop offset="50%" stop-color="#3E6B8E"/>
+              <stop offset="100%" stop-color="#E4D9EA"/>
+            </linearGradient>
+          </defs>
+
+          <!-- layered static homotopy contours (nacre effect) -->
+          <path d="M80,300 C200,120 360,120 480,300" stroke="#CCDFEB" stroke-width="1.4" fill="none" opacity="0.55"/>
+          <path d="M80,300 C200,192 360,192 480,300" stroke="#CCDFEB" stroke-width="1.4" fill="none" opacity="0.4"/>
+          <path d="M80,300 C200,264 360,264 480,300" stroke="#CCDFEB" stroke-width="1.4" fill="none" opacity="0.3"/>
+          <path d="M80,300 C200,336 360,336 480,300" stroke="#CCDFEB" stroke-width="1.4" fill="none" opacity="0.4"/>
+          <path d="M80,300 C200,408 360,408 480,300" stroke="#CCDFEB" stroke-width="1.4" fill="none" opacity="0.55"/>
+
+          <!-- endpoints A, B -->
+          <circle cx="80" cy="300" r="5" fill="#234061"/>
+          <circle cx="480" cy="300" r="5" fill="#234061"/>
+          <text x="66" y="326" font-family="IBM Plex Mono, monospace" font-size="13" fill="#37485A">a</text>
+          <text x="486" y="326" font-family="IBM Plex Mono, monospace" font-size="13" fill="#37485A">b</text>
+
+          <!-- p and q labels -->
+          <text x="255" y="112" font-family="Fraunces, serif" font-style="italic" font-size="17" fill="#3E6B8E">p</text>
+          <text x="255" y="428" font-family="Fraunces, serif" font-style="italic" font-size="17" fill="#3E6B8E">q</text>
+
+          <!-- animated homotopy sweep -->
+          <path id="homotopy-sweep" stroke="url(#sweepGrad)" stroke-width="2.6" fill="none" stroke-linecap="round"
+                d="M80,300 C200,120 360,120 480,300">
+            <animate attributeName="d" dur="5.5s" repeatCount="indefinite"
+              values="
+                M80,300 C200,120 360,120 480,300;
+                M80,300 C200,408 360,408 480,300;
+                M80,300 C200,120 360,120 480,300" />
+          </path>
+
+          <circle id="homotopy-dot" r="5.5" fill="#234061">
+            <animateMotion dur="5.5s" repeatCount="indefinite"
+              path="M80,300 C200,120 360,120 480,300" />
+          </circle>
+
+          <text x="228" y="360" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5C87A8">H : p ≃ q</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about">
+    <div class="wrap about-grid">
+      <div>
+        <p class="eyebrow">About the group</p>
+        <h2>Foundations, read slowly and together.</h2>
+        <p>Homotopy Type Theory reinterprets Martin-Löf type theory through the lens of
+          homotopy theory: types become spaces, terms become points, and equalities
+          become paths. Adding the univalence axiom and higher inductive types turns
+          this into a genuine foundation for mathematics — one where equivalent
+          structures can be identified on the nose.</p>
+        <p>This group works chapter by chapter through the
+          <span class="placeholder">HoTT Book</span> (Univalent Foundations Program,
+          IAS), alternating short lecture-style recaps with group proof-working at the
+          board. No prior homotopy theory is assumed; a working knowledge of some
+          dependently-typed proof assistant (Agda, Coq, or Lean) is helpful but not
+          required to start.</p>
+      </div>
+      <div class="glyph-panel">
+        <div class="glyph">Σ</div>
+        <div class="glyph">Π</div>
+        <div class="glyph">≃</div>
+        <div class="glyph">𝟙</div>
+        <div class="glyph">=</div>
+        <div class="glyph">∅</div>
+        <div class="glyph">𝒰</div>
+        <div class="glyph">∞</div>
+        <div class="glyph">⊤</div>
+        <p class="glyph-caption">the vocabulary we'll be reading in</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOGISTICS ================= -->
+  <section id="logistics">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Logistics</p>
+        <h2>When and where we meet</h2>
+        <p>Details below are placeholders — swap in your room, time, and platform once confirmed.</p>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="k">Meets</div>
+          <div class="v placeholder">Thursdays, 4:00&nbsp;PM</div>
+          <div class="d">Weekly during the fall semester, 90-minute sessions.</div>
+        </div>
+        <div class="card">
+          <div class="k">Where</div>
+          <div class="v placeholder">Boyd 302</div>
+          <div class="d">UGA Mathematics Department. Hybrid link on request.</div>
+        </div>
+        <div class="card">
+          <div class="k">Format</div>
+          <div class="v">Reading + board work</div>
+          <div class="d">One member presents; the room proves things live.</div>
+        </div>
+        <div class="card">
+          <div class="k">Contact</div>
+          <div class="v placeholder">hott-uga@uga.edu</div>
+          <div class="d">Reach out for the reading list PDF or to present a chapter.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCHEDULE ================= -->
+  <section id="schedule">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Fall 2026 schedule</p>
+        <h2>Ten weeks, chapter by chapter</h2>
+        <p>Following the structure of the HoTT Book. Dates are placeholders — align them to UGA's actual fall calendar.</p>
+      </div>
+
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-num">00</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Aug 17</span>
+            <span class="tl-title">Kickoff &amp; type theory refresher</span>
+            <span class="tl-desc">Dependent types, judgmental vs. propositional equality, Π and Σ types. No reading required — come with questions.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">01</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Aug 24</span>
+            <span class="tl-title">Ch. 1 — Type theory</span>
+            <span class="tl-desc">Function types, universes, inductive types, the identity type as the seed of everything that follows.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">02</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Sep 7</span>
+            <span class="tl-title">Ch. 2 — Homotopy type theory</span>
+            <span class="tl-desc">Types as spaces, terms as points, paths as equalities. Path induction and the groupoid structure of types.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">03</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Sep 21</span>
+            <span class="tl-title">Ch. 3 — Sets and logic</span>
+            <span class="tl-desc">h-levels, propositions vs. sets, the law of excluded middle, and why not everything is decidable.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">04</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Oct 5</span>
+            <span class="tl-title">Ch. 4 — Equivalences</span>
+            <span class="tl-desc">Quasi-inverses, bi-invertibility, and the "right" definition of equivalence between types.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">05</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Oct 19</span>
+            <span class="tl-title">Ch. 5 — Induction</span>
+            <span class="tl-desc">Induction principles as recursors, W-types, and the identity types of inductive types.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">06</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Nov 2</span>
+            <span class="tl-title">Ch. 6 — Higher inductive types</span>
+            <span class="tl-desc">Circles, spheres, suspensions, and pushouts — types generated by paths, not just points.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">07</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Nov 9</span>
+            <span class="tl-title">Ch. 7 — Homotopy n-types</span>
+            <span class="tl-desc">Truncation, the truncation modality, and how h-levels stratify the universe.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">08</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Nov 16</span>
+            <span class="tl-title">Ch. 8 — Homotopy theory</span>
+            <span class="tl-desc">Calculating π₁(S¹), the Hopf fibration, and the Freudenthal suspension theorem — synthetically.</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-num">09</div>
+          <div class="tl-body">
+            <span class="tl-week placeholder">Week of Dec 1</span>
+            <span class="tl-title">Capstone &amp; open problems</span>
+            <span class="tl-desc">Short member presentations: a formalized proof, a cubical type theory demo, or a favorite open question.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESOURCES ================= -->
+  <section id="resources">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Resources</p>
+        <h2>What to bring, what to read</h2>
+      </div>
+      <div class="res-list">
+        <a class="res-item" href="https://homotopytypetheory.org/book/" target="_blank" rel="noopener">
+          <div>
+            <div class="rt">The HoTT Book</div>
+            <div class="rd">Univalent Foundations Program, free PDF &amp; HTML</div>
+          </div>
+          <span class="res-arrow">↗</span>
+        </a>
+        <a class="res-item" href="https://agda.readthedocs.io/" target="_blank" rel="noopener">
+          <div>
+            <div class="rt">Agda documentation</div>
+            <div class="rd">Dependently-typed proof assistant we'll reference in session</div>
+          </div>
+          <span class="res-arrow">↗</span>
+        </a>
+        <a class="res-item" href="https://leanprover.github.io/" target="_blank" rel="noopener">
+          <div>
+            <div class="rt">Lean theorem prover</div>
+            <div class="rd">Alternative for members who'd rather formalize in Lean</div>
+          </div>
+          <span class="res-arrow">↗</span>
+        </a>
+        <a class="res-item" href="https://ncatlab.org/nlab/show/homotopy+type+theory" target="_blank" rel="noopener">
+          <div>
+            <div class="rt">nLab: homotopy type theory</div>
+            <div class="rd">Reference wiki for definitions and cross-links</div>
+          </div>
+          <span class="res-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= JOIN ================= -->
+  <section id="join">
+    <div class="wrap">
+      <div class="join">
+        <div>
+          <h2>Come prove something with us.</h2>
+          <p>Open to graduate students, advanced undergraduates, and faculty across
+            math, computer science, and philosophy. No RSVP required for the first
+            session — just show up.</p>
+        </div>
+        <div class="join-box">
+          <div class="k">Organizer</div>
+          <div class="v placeholder">James Squires · UGA Mathematics</div>
+          <div class="k">Mailing list</div>
+          <div class="v placeholder">hott-uga@uga.edu</div>
+          <div class="k">First meeting</div>
+          <div class="v placeholder">Week of Aug 17, 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="fm">HoTT Reading Group · UGA · Fall 2026</p>
+</footer>
+
+</body>
+</html>
